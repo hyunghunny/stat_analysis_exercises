@@ -1,0 +1,130 @@
+---
+title: "Statistics Analysis Homework 1"
+author: "2015-26042 Hyunghun Cho"
+date: "Friday, September 09, 2016"
+output: html_document
+---
+
+This is an exercise from OpenIntro Statistics <https://www.openintro.org/stat/>.
+
+Firstly, I solved the exercises from **Introduction to data**: <http://htmlpreview.github.io/?https://github.com/andrewpbray/oiLabs-base-R/blob/master/intro_to_data/intro_to_data.html> 
+
+```{r}
+source("http://www.openintro.org/stat/data/cdc.R")
+names(cdc)
+head(cdc)
+tail(cdc)
+```
+
+**Exercise 1 Answer**
+There is 20000 cases for each nine variables like follows: genhlth exerany hlthplan smoke100 height weight wtdesire age gender
+Each variables has following data types: categorical discrete discrete discrete discrete discrete discrete discrete categorical
+
+```{r}
+str(cdc)
+```
+**Exercise 2 Answer**
+
+```{r, echo=FALSE}
+height <- cdc$height
+age <- cdc$age
+summary(height)
+summary(age)
+print (IQR(height))
+print (IQR(age))
+
+gender.freq <- table(cdc$gender)
+gender.relfreq <- gender.freq / length(cdc$gender)
+barplot(gender.relfreq)
+
+
+print (gender.freq['m'])
+
+exerany.freq <- table(cdc$exerany)
+exerany.relfreq <- exerany.freq / length(cdc$exerany)
+barplot(exerany.relfreq)
+
+```
+**Exercise 3 Answer**
+The below plot reveals that male has more smoking habits than female. 
+```{r, echo=FALSE}
+print (table(cdc$gender,cdc$smoke100))
+mosaicplot(table(cdc$gender,cdc$smoke100))
+
+```
+**Exercise 4 Answer**
+
+```{r}
+under23_and_smoke <- subset(cdc, cdc$smoke100 == 1 & cdc$age > 23)
+summary(under23_and_smoke)
+
+```
+
+**Exercise 5 Answer**
+Below boxplot shows a trend which the who is well has less BMI Index.  
+But, the smokers and non smokers have no significant differences to BMI Index. I thought that smokers may have bad health conditions, but this is a wrong assumption.
+
+```{r, echo=FALSE}
+bmi <- (cdc$weight / cdc$height^2) * 703
+boxplot(bmi ~ cdc$genhlth)
+boxplot(bmi ~ cdc$smoke100)
+boxplot(bmi ~ cdc$exerany)
+
+```
+It's time to solve the questions in On Your Own.
+
+**On Your Own 1 Answer**
+Below figure shows that there is a positive relationship between weight and desired weight.  
+
+```{r, echo=FALSE}
+plot(cdc$weight ~ cdc$wtdesire)
+
+```
+**On Your Own 2 Answer**
+
+```{r}
+wdiff <- cdc$weight - cdc$wtdesire
+
+```
+
+**On Your Own 3 Answer**
+wdiff is 0 if a person's desired weight is same as his(her) current weight.
+If it is positive, it means that he(she) want to lose his(her) weight. Otherwise he(she) want to put weight on.
+
+```{r}
+print (typeof(wdiff))
+
+```
+**On Your Own 4 Answer**
+Almost people want to lose their weight a little bit. Also, there are outliers who want to lose or to put on many weights.
+```{r, echo=FALSE}
+print (summary(wdiff))
+barplot(wdiff)
+boxplot(wdiff)
+hist(wdiff, breaks = 50)
+```
+
+**On Your Own 5 Answer**
+Men and women has no significant differences to view about their weight.
+
+```{r, echo=FALSE}
+men <- subset(cdc, cdc$gender == "m")
+women <- subset(cdc, cdc$gender == "f")
+print (summary(men))
+print (summary(women))
+men.wdiff <- men$weight - men$wtdesire
+women.wdiff <- women$weight - women$wtdesire
+boxplot(men.wdiff, women.wdiff, names=c("men wdiff", "women wdiff"))
+```
+
+**On Your Own 5 Answer**
+
+```{r}
+weight.mean <- mean(cdc$weight)
+weight.sd <- sd(cdc$weight)
+print (paste(c(weight.mean, weight.sd), collapse=', '))
+
+normalized <- (cdc$weight - weight.mean)/weight.sd
+hist(normalized, freq = FALSE)
+
+```
