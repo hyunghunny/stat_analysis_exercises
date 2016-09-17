@@ -1,0 +1,443 @@
+---
+title: "Stats Homework 2"
+author: "2015-26042 Hyunghun Cho"
+date: "Saturday, September 17, 2016"
+output: pdf_document
+---
+
+# **Lab02 - Probability On Your Own**
+
+```{r}
+download.file("http://www.openintro.org/stat/data/kobe.RData", destfile = "kobe.RData")
+load("kobe.RData")
+outcomes <- c("H", "M")
+```
+## 1. Describe the distribution of streak lengths. What is the typical streak length for this simulated independent shooter with a 45% shooting percentage? How long is the player’s longest streak of baskets in 133 shots?
+
+\textcolor{blue}{A1: Referring to the following plot, it seems like a long tale curve. The typical streak length is zero or one and the longest streak is 6 in this time. But, it will be different by chance.}
+
+
+```{r, echo=FALSE}
+sim_basket <- sample(outcomes, size = 133, replace = TRUE, prob = c(0.45, 0.55))
+sim_basket <- calc_streak(sim_basket)
+barplot(table(sim_basket), main="simulation 1 streaks distribution")
+```
+
+## 2. If you were to run the simulation of the independent shooter a second time, how would you expect its streak distribution to compare to the distribution from the question above? Exactly the same? Somewhat similar? Totally different? Explain your reasoning.
+
+\textcolor{blue}{A2: The second simulation's distribution seems can be smimilar with the first simulation. As my few more trials, I can find different distributions by chance. That is, even streak disributions with the same probability can be shown differently.}
+
+```{r, echo=FALSE}
+sim_basket2 <- sample(outcomes, size = 133, replace = TRUE, prob = c(0.45, 0.55))
+sim_basket2 <- calc_streak(sim_basket2)
+barplot(table(sim_basket2), main="simulation 2 streaks distribution")
+```
+
+## 3. How does Kobe Bryant’s distribution of streak lengths compare to the distribution of streak lengths for the simulated shooter? Using this comparison, do you have evidence that the hot hand model fits Kobe’s shooting patterns? Explain.
+
+\textcolor{blue}{A3: Bryant's distribution looks simular to two  simulated shooter's distributions from the perspective of a long tale curve. But details like the longest streaks is not same as simuated ones. Therefore, it shows that the hot hand model can't fit Kobe's shooting patterns.}
+
+```{r, echo=FALSE}
+kobe_streak <- calc_streak(kobe$basket)
+barplot(table(kobe_streak), , main="Kobe's hit streaks distribution")
+
+```
+
+
+# 2.6 Exercises
+
+## 2.8 Poverty and language
+
+### (a) No, they can both happen
+
+### (b) See the below figure:
+```{r, echo=FALSE}
+library(VennDiagram)
+grid.newpage()
+live_below_poverty <- 14.6
+speak_other_lang <- 20.7
+both <- 4.2
+
+diagram <- draw.pairwise.venn(area1 = live_below_poverty, 
+                              area2 = speak_other_lang, 
+                              cross.area = both,
+                              category = c("Live below the poverty line", "Speak other language at home"), 
+                              lty = rep("blank", 2),
+                              fill = c("light blue", "pink"), 
+                              alpha = rep(0.5, 2), 
+                              cat.pos = c(0, 0), 
+                              cat.dist = rep(0.025, 2))
+```
+
+### (c) 10.4%
+```{r}
+print(live_below_poverty - both)
+```
+
+### (d) 31.1%
+```{r}
+print(live_below_poverty + speak_other_lang - both)
+```
+
+### (e) 68.9%
+```{r}
+live_above_poverty <- 100 - live_below_poverty
+speak_other_lang_not_poor <- 16.5
+print(live_above_poverty - speak_other_lang_not_poor)
+
+```
+
+### (f) Yes, It is independent event.
+
+
+## 2.14 Weight and health coverage, Part I 
+
+### (a) 3.57%
+```{r}
+total <- 428638
+overweight_and_nocov_rate <- 15327 / total
+print (overweight_and_nocov_rate)
+```
+
+### (b) 47.1%
+
+```{r}
+nocov <- 44873
+overweight <- 157026
+overweight_or_nocov_rate <- (nocov + overweight) / total
+print (overweight_or_nocov_rate)
+```
+
+## 2.15 Joint and conditional probabilities
+
+### (a) No, but if A and B is independent, it can be computed.
+
+### (b) 
+####  i. P(A and B) = 0.21
+####  ii. P (A or B) = 0.79
+####  iii. P(A|B) = 0.3 
+#####       It is same as P(A) because A and B is independent
+```{r}
+P_a <- 0.3
+P_b <- 0.7
+P_a_and_b <- P_a * P_b
+P_a_or_b <- P_a + P_b - P_a_and_b
+```
+### (c) No, if A and B is independent, P(A and B) is 0.21 as above.
+
+### (d) P(A|B) is P(A and B) / P(B). therefore it is 0.14
+```{r}
+P_a_and_b <- 0.1
+P_a_bar_b <- P_a_and_b / P_b
+print(P_a_bar_b)
+```
+
+## 2.17 Global warming
+
+### (a) 0.62
+```{r}
+total_warn <- 0.6
+total_libdem <- 0.2
+libdem_and_warn <- 0.18
+print(total_warn + total_libdem - libdem_and_warn)
+```
+### (b) 0.9
+```{r}
+print(libdem_and_warn/total_libdem)
+```
+### (c) 0.33
+```{r}
+conrep_and_warn <- 0.11
+total_conrep <- 0.33
+print(conrep_and_warn/total_conrep)
+```
+### (d) No, because the answer of (b) and (c) is not equal.
+
+### (e) 0.176
+```{r}
+modlib_rep_nowarn <- 0.06
+total_nowarn <- 0.34
+print(modlib_rep_nowarn/total_nowarn)
+```
+
+## 2.23 HIV in Swaziland
+
+### P(HIV | positive) = 0.82
+```{r}
+hiv <- 0.259
+nohiv <- 1.0 - hiv
+hiv_po <- 0.997
+hiv_ne <- 1.0 - hiv_po
+nohiv_ne <- 0.926
+nohiv_po <- 1.0 - nohiv_ne
+
+hiv_tp <- hiv * hiv_po
+nohiv_tp <- nohiv * nohiv_po
+
+P_hiv_bar_tp <- hiv_tp / (hiv_tp + nohiv_tp)
+print(P_hiv_bar_tp)
+
+```
+
+## 2.35 Another card game
+
+### (a) probability model
+
+ event   X   P(X)   X P(X)   (X - E(X))^2   (X -E(X))^2 P(X)   
+------- --- ------ -------- -------------- ------------------ 
+hearts3 50   0.129      0.65          8.65           0.112
+blacks3 25   0.118      2.94          0.42           0.05
+else    0    0.869        0          12.87           11.19
+
+#### E(X) = 3.59
+#### V(X) = 11.36
+#### SD(X) = 3.37
+
+```{r}
+hearts3_win_prize <- 50
+blacks3_win_prize <- 25
+no_prize <- 0
+num_hearts <- 13
+num_blacks <- 26
+num_decks <- 52
+
+calc_P <- function (num_cards) {
+  P <- ((num_cards/num_decks) * ((num_cards-1)/(num_decks-1)) * ((num_cards-2)/(num_decks-2)))
+  return(P)
+}
+P_hearts3 <- calc_P(num_hearts)
+P_blacks3 <- calc_P(num_blacks)
+P_else <- 1.0 - (P_hearts3 + P_blacks3)
+
+XP_hearts3 <- hearts3_win_prize * P_hearts3
+XP_blacks3 <- blacks3_win_prize * P_blacks3
+XP_else <- no_prize * P_else
+EX <- XP_hearts3 + XP_blacks3 + XP_else
+
+calc_err_sqr <- function (xp) {
+  ret <- (xp - EX)^2
+}
+E2_hearts3 <- calc_err_sqr(XP_hearts3)
+E2_blacks3 <- calc_err_sqr(XP_blacks3)
+E2_else <- calc_err_sqr(XP_else)
+
+E2PX_hearts3 <- E2_hearts3 * P_hearts3
+E2PX_blacks3 <- E2_blacks3 * P_blacks3
+E2PX_else <- E2_else * P_else
+
+VX <- E2PX_hearts3 + E2PX_blacks3 + E2PX_else
+SD <- sqrt(VX)
+```
+
+### (b) E(X - 5) = E(X) - 5 = 3.59 - 5 = -1.41
+#### SD is same as above: 3.37
+
+### (c) No, expected earning is negative. Therefore I should lose the game finally.
+
+ 
+## 2.42 Selling on Ebay
+
+### (a) She would spend 72$ and SD of making is 1$
+```{r}
+book_mean <- 110
+book_sd <- 4
+game_mean <- 38
+game_sd <- 5
+
+net_money <- game_mean - book_mean 
+sd_spend <-  game_sd - book_sd
+
+```
+### (b) She will make 10 dollars and SD will be 0.4 dollar 
+
+
+
+# 3.6 Exercises
+
+## 3.3 Scores on the GRE, Part I
+```{r}
+verbal <- 620
+quant <- 670
+mean_verbal <- 462
+sd_verbal <- 119
+mean_quant <- 584
+sd_quant <- 151
+total_score <- 800
+
+```
+
+### (a) 
+#### Verbal: N(mu=462, sigma=119)
+#### Quantitative: N(mu=584, sigma=151)
+
+### (b) Z verbal = 1.327, Z quant = 0.569
+```{r, echo=FALSE}
+Z_verbal <- (verbal - mean_verbal) /(sd_verbal) 
+Z_quant <- (quant - mean_quant) /(sd_quant)
+
+library(lattice)
+
+Z <- seq(-4, 4, length = 10000) # Data to set up out normal
+normal_distribute <- dnorm(Z, 0, 1)
+
+xyplot(normal_distribute ~ Z,
+     type = "l",
+     main = "Standard Normal Distribution Curve",
+     panel = function(x,y, ...){
+         panel.xyplot(x,y, ...)
+         panel.abline( v = c(Z_verbal, Z_quant), lty = 2)
+         panel.text(x=Z_verbal, y = 0.15, labels="Z verbal")
+         panel.text(x=Z_quant, y = 0.35, labels="Z quantitative")
+     })
+```
+
+### (c) A college senior 1.327 SD above for verbal reasoning section and 0.569 above for quantitative reasoning section.
+
+### (d) veral reasoning section
+
+### (e) The percentile of verbal is near 91% and the same of quantitative is 72%    
+```{r}
+percent_verbal <- pnorm(verbal, mean=mean_verbal, sd=sd_verbal)
+percent_quant <- pnorm(quant, mean=mean_quant, sd=sd_quant)
+
+```
+### (f) The percent of test takers on the Verbal Reasoning Section is  9% and the other is 28% 
+```{r}
+percent_remain_verbal <- 1.0 - percent_verbal
+percent_remain_quant <- 1.0 - percent_quant
+
+```
+### (g) I cann't compare raw scores due to different scales.
+
+### (h) Z score can be calculated if it is not normal distribution as I answered in (b). But, (c) ~ (f) couldn't be answered.
+
+## 3.5 GRE scores, Part II
+
+### (a) 711
+```{r}
+p <- 0.8
+z <- qnorm(p)
+score_quant <- (z * sd_quant) +  mean_quant
+print(score_quant)
+```
+### (b) 399.6
+
+```{r}
+p <- 0.7
+z <- qnorm(p)
+score_verbal <- (-1.0 * z * sd_verbal) +  mean_verbal
+print(score_verbal)
+
+```
+
+## 3.11 Auto insurance premiums
+### (a) Z = 0.674
+```{r}
+ins_mean <- 1650
+p <- 0.75
+z <- qnorm(p)
+print(z)
+```
+### (b) mu = \$1650, cutoff = \$1800
+
+### (c) sigma = \$222.4
+```{r}
+cutoff <- 1800
+ins_sd <- (cutoff - ins_mean) / z
+print(ins_sd)
+```
+
+## 3.12 Speeding on the I-5
+### (a) 94%
+```{r}
+speed_mean <- 72.6
+speed_sd <- 4.76
+z80 <- (80 - speed_mean) / speed_sd
+percent_80miles <- pnorm(z80, lower.tail=TRUE)
+print(percent_80miles)
+```
+### (b) 93.6%
+```{r}
+z60 <- (60 - speed_mean) / speed_sd
+percent_60miles <- pnorm(z60, lower.tail=TRUE)
+percent_bt_60_80 <- percent_80miles - percent_60miles
+print(percent_bt_60_80)
+```
+
+### (c) 80.43 miles/hour
+```{r}
+p <- 0.95
+z <- qnorm(p)
+percent_fastest <- (z * speed_sd) +  speed_mean
+print(percent_fastest)
+```
+
+### (d) 70.7%
+```{r}
+z70 <- (70 - speed_mean) / speed_sd
+percent_70miles <- pnorm(z70, lower.tail=FALSE)
+print(percent_70miles)
+```
+
+
+## 3.14 Find the SD
+### (a) 15.58
+```{r}
+percent_mensa <- 0.98
+z_mensa <- qnorm(percent_mensa)
+iq_mean <- 100
+mensa_iq_min <- 132
+mensa_sd <- (mensa_iq_min - iq_mean) / z_mensa
+print(mensa_sd)
+```
+### (b) 39.04
+```{r}
+chol_mean <- 185
+chol_max <- 220
+percent_high_chol <- 1.0 - 0.185
+z_chol <- qnorm(percent_high_chol)
+chol_sd <- (chol_max - chol_mean) / z_chol
+print(chol_sd)
+```
+
+## 3.21 Is it Bernoulli?
+### (a) No, The cards are not independent each other
+
+### (b) No, The Bernoulli distribution allows to only two events but serveral roll can be performed.
+
+
+## 3.24 Defective rate
+
+### (a) 1.67%
+```{r}
+p_err <- 0.02
+p_norm <- (1 - p_err)
+p_err10 <- p_norm^9 * p_err
+print(p_err10)
+```
+
+### (b) 13.26%
+```{r}
+p_norm100 <- p_norm^100
+print(p_norm100)
+```
+
+### (c) 50 transistors to failure, SD = 49.5
+```{r}
+mean <- 1.0 / p_err
+print(mean)
+sigma <- sqrt((1.0-p_err)/(p_err)^2)
+print(sigma)
+```
+
+### (d) 20 transistors to failure, SD = 19.5
+```{r}
+p_err5 <- 0.05
+mean_5 <- 1.0 / p_err5
+print(mean_5)
+sigma5 <- sqrt((1.0-p_err5)/(p_err5)^2)
+print(sigma5)
+```
+
+### (e) When p is larger, the error increases, meaning the expected number of trials before an error and the standard deviation is smaller. 
+
