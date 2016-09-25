@@ -1,0 +1,327 @@
+---
+title: "Statistics Homework 3"
+author: "2015-26042 Hyunghun Cho"
+date: "Sunday, September 25, 2016"
+output: pdf_document
+---
+
+# Lab 03 Distribution or Random Variables 
+
+```{r}
+download.file("http://www.openintro.org/stat/data/bdims.RData", destfile = "bdims.RData")
+load("bdims.RData")
+
+#head(bdims)
+mdims <- subset(bdims, sex == 1)
+fdims <- subset(bdims, sex == 0)
+#hist(mdims$hgt)
+#hist(fdims$hgt)
+
+#fhgtmean <- mean(fdims$hgt)
+#fhgtsd   <- sd(fdims$hgt)
+
+draw_prob_his <- function(col) {
+  hist(col, probability = TRUE)
+  x <- 140:190
+  y <- dnorm(x = x, mean = mean(col), sd = sd(col))
+  lines(x = x, y = y, col = "blue")
+}
+
+draw_norm_qq <- function(col) {
+  qqnorm(col)
+  qqline(col)  
+}
+
+#sim_norm <- rnorm(n = length(fdims$hgt), mean = fhgtmean, sd = fhgtsd)
+
+#plot(sim_norm)
+#qqnormsim(fdims$hgt)
+
+#1 - pnorm(q = 182, mean = fhgtmean, sd = fhgtsd)
+#sum(fdims$hgt > 182) / length(fdims$hgt)
+```
+
+## 1. Now let’s consider some of the other variables in the body dimensions data set. Using the figures at the end of the exercises, match the histogram to its normal probability plot. All of the variables have been standardized (first subtract the mean, then divide by the standard deviation), so the units won’t be of any help. If you are uncertain based on these figures, generate the plots in R to check.
+
+### a. The histogram for female biiliac (pelvic) diameter (bii.di) belongs to normal probability plot letter \textcolor{blue}{B}
+
+```{r, echo=FALSE}
+#draw_prob_his(fdims$bii.di)
+draw_norm_qq(fdims$bii.di)
+#qqnormsim(fdims$bii.di)
+
+```
+
+### b. The histogram for female elbow diameter (elb.di) belongs to normal probability plot letter \textcolor{blue}{C}
+
+```{r, echo=FALSE}
+draw_norm_qq(fdims$elb.di)
+```
+
+### c. The histogram for general age (age) belongs to normal probability plot letter \textcolor{blue}{D}
+
+```{r, echo=FALSE}
+draw_norm_qq(bdims$age)
+```
+
+### d. The histogram for female chest depth (che.de) belongs to normal probability plot letter \textcolor{blue}{A}
+
+```{r, echo=FALSE}
+draw_norm_qq(fdims$che.de)
+```
+
+## 2. Note that normal probability plots C and D have a slight stepwise pattern. Why do you think this is the case?
+
+\textcolor{blue}{Because this sample group is selected in most of whom were considered healthy young adults.}
+
+## 3. As you can see, normal probability plots can be used both to assess normality and visualize skewness. Make a normal probability plot for female knee diameter (kne.di). Based on this normal probability plot, is this variable left skewed, symmetric, or right skewed? Use a histogram to confirm your findings.
+
+\textcolor{blue}{ right skewed. }
+
+```{r, echo=FALSE}
+draw_prob_his(fdims$kne.di)
+```
+
+# Lab 4B Confidence Intervals
+
+```{r}
+download.file("http://www.openintro.org/stat/data/ames.RData", destfile = "ames.RData")
+load("ames.RData")
+
+population <- ames$Gr.Liv.Area
+
+```
+
+## 1. Using the following function (which was downloaded with the data set), plot all intervals. What proportion of your confidence intervals include the true population mean? Is this proportion exactly equal to the confidence level? If not, explain why.
+
+It varies 86~100% when I repeat serveral times. No. it is because each confident interval has a 5% error.
+
+```{r, echo=FALSE}
+sample_size <- 60
+sd_err <- 1.96 # 95% confidence level
+conf_num <- 50 # number of confidence intervals
+
+mean_pop <- mean(population)
+
+samp_mean <- rep(NA, conf_num)
+samp_sd <- rep(NA, conf_num)
+
+
+for(i in 1:conf_num){
+  samp <- sample(population, sample_size)
+  samp_mean[i] <- mean(samp)
+  samp_sd[i] <- sd(samp)
+}
+
+lower_vector <- samp_mean - sd_err * samp_sd / sqrt(sample_size) 
+upper_vector <- samp_mean + sd_err * samp_sd / sqrt(sample_size)
+
+plot_ci(lower_vector, upper_vector, mean_pop)
+
+```
+
+## 2. Pick a confidence level of your choosing, provided it is not 95%. What is the appropriate critical value?
+
+I picked 90% confidence level and the critical value is 1.64.
+
+
+## 3. Calculate 50 confidence intervals at the confidence level you chose in the previous question. You do not need to obtain new samples, simply calculate new intervals based on the sample means and standard deviations you have already collected. Using the plot_ci function, plot all intervals and calculate the proportion of intervals that include the true population mean. How does this percentage compare to the confidence level selected for the intervals?
+
+Belonging to the answer 1, the proposition varies. If answer is 94%, it becomes to 88%.
+
+```{r}
+sd_err <- 1.64 # 90% confidence level
+lower_vector <- samp_mean - sd_err * samp_sd / sqrt(sample_size) 
+upper_vector <- samp_mean + sd_err * samp_sd / sqrt(sample_size)
+
+plot_ci(lower_vector, upper_vector, mean_pop)
+```
+
+# 3.6 Exercises
+
+## 3.25 Eye color
+```{r}
+brown_prob <- 0.75
+blue_prob <- 0.125
+green_prob <- 0.125
+```
+
+### (a)
+```{r}
+prob <- (1.0 - blue_prob)^2 * blue_prob
+print(prob)
+```
+
+### (b) mu = 8, sigma = 7.48
+```{r}
+print(1 / blue_prob)
+print(sqrt((1.0 - blue_prob)/(blue_prob)^2))
+```
+
+## 3.27 Underage drinking
+```{r}
+prob_al <- 0.7
+
+bi_prob <- function (n, k, p) {
+  
+  ret <- choose(n, k) * (p)^k * (1-p)^(n-k)
+  return (ret)
+}
+
+```
+
+### (a) Yes, if the condition that has indepence, fixed number of trials, either success or failure for each trial, and probability of sucess being constant across trials are satisfied.
+
+### (b) 
+```{r}
+n <- 10
+k <- 6
+prob <- bi_prob(n, k, prob_al)
+print(prob)
+```
+
+### (c)
+```{r}
+n <- 10
+k <- 4
+prob <- bi_prob(n, k, 1 - prob_al)
+print(prob)
+```
+
+### (d) 
+```{r}
+prob <- bi_prob(5, 0, prob_al) + bi_prob(5, 1, prob_al) + bi_prob(5, 2, prob_al)
+print(prob)
+```
+
+### (e) 
+```{r}
+prob <- 1.0 - (bi_prob(5, 0, prob_al)) 
+print(prob)
+```
+
+## 3.32 Survey response rate
+
+```{r}
+p <- 0.09
+n <- 15000
+k <- 1500
+mu <- n * p
+sigma <- sqrt(n*p*(1-p))
+print(pnorm(k, mean=mu, sd=sigma, lower.tail=FALSE))
+
+```
+
+## 3.36 Sickle cell anemia
+### (a)
+```{r}
+
+```
+
+### (b)
+```{r}
+
+```
+
+### (c)
+```{r}
+
+```
+
+### (d)
+```{r}
+
+```
+
+# 4.6 Exercises
+
+## 4.4 Heights of adults
+
+### (a) mean = 171.1, median = 170.3
+
+### (b) sd = 9.4, IQR = 177.8 - 163.8 = 14
+```{r}
+iqr <- 177.8 - 163.8
+```
+
+### (c) No, 180cm < (mean + 2 * sd) and 155 cm > (mean - 2 * sd) 
+```{r}
+171.1 + 2* 9.4
+171.1 - 2* 9.4
+
+```
+
+### (d) No, there is no confidence that the properties of sample will be preserved to another sample.
+
+### (e) use SE = 0.42s
+```{r}
+se <- 9.4 / sqrt(507)
+```
+
+## 4.8 Mental health
+
+### (a) we are 95% confident that US residents spend an average of 3.40 to 4.24 days in 2010 feeling not good in mental health during past 30 days. 
+
+### (b) 95% of such random samples will yield a CI that contains the true average days during past 30 days that US residents do not have good mental health.
+
+### (c) They can be a more confident in capturing parameter so the interval will be larger.
+
+### (d) SE will be increased because sample is reduced with same SD.
+
+
+## 4.10 Confidence levels
+The confidence interval with a highest confidence level can not permit to miss. It may bring that all things are not interpretable.   
+
+
+## 4.11 Waiting at an ER I
+
+### (a) False
+
+### (b) False
+
+### (c) True
+
+### (d) False
+
+### (e) False
+
+### (f) True
+
+### (g) False
+
+
+## 4.17 Online communication
+1. hypothesis should be about popluation mean, not the sample mean 
+2. null hypothesis should have equal sign and alternative hypothesis should be about the null hypothesized value
+3. the test should be two-sided
+
+## 4.23 Waiting at an ER II
+### (a) independence. assumption is that the skew is not very strong. 
+
+### (b) null hypothesis: mu is equal to 127, alternative hypothesis: mu is not equal to 127. Z is 2.15 and so p-value is 2*0.158=0.0316 < 0.05. therefore, null hypothesis is rejected.
+
+### (c)  yes
+
+## 4.24 Gifted children II
+
+### (a)
+
+### (b)
+
+### (c)
+
+## 4.26 Find sample mean
+If p-value is 0.05, null hypothesis is rejected. therefore the sample mean follws alternative hyptothesis. sample mean is as below:  
+```{r}
+mu <- 34
+sd <- 10
+k <- 65
+z <- 1.96 # 95% confidence level p = 0.05
+se <- sd / sqrt(k)
+sample_mu <- mu + se
+print (sample_mu)
+```
+
+## 4.44 Nearsightedness
+
+
