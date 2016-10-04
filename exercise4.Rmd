@@ -29,10 +29,51 @@ output: pdf_document
 ## 5.34
 
 
+# music
 
+
+```{r}
+filename <- 'music.csv'
+music <- read.csv(filename, header=TRUE, sep=",")
+group.a <- subset(music, Group == 'A')
+group.b <- subset(music, Group == 'B')
+X.a <- group.a$Completed
+X.b <- group.b$Completed
+N.a <- length(X.a)
+N.b <- length(X.b)
+M.a <- mean(group.a$Completed)
+M.b <- mean(group.b$Completed)
+SS.a <- sum( (X.a - M.a)^2)
+SS.b <- sum( (X.b - M.b)^2)
+diff.mean <- M.a-M.b
+#mu.m <- mu.source
+#mu.mm <- mu.source.a - mu.source.b
+
+# by null hypothesis, mu.source.a and mu.source.b is identical
+mu.mm <- 0
+#sigma.mm <- sqrt(sigma.source^2 / N.a + sigma.source^2 / N.b)
+# z <- (M.x.a - M.x.b) / sigma.mm
+df <- (N.a - 1) + (N.b - 1)
+
+var.source <- (SS.a + SS.b) / ((N.a - 1) + (N.b - 1))
+est_sigma.mm <- sqrt(var.source/N.a + var.source/N.b)
+t <- (M.a - M.b) / est_sigma.mm
+print (t)
+# 95% confindence interval if 
+qt(c(.05, .95), df=df)
+
+
+# 95% confidence interval if H0 is that mu.source.b is either greater or lesser than mu.source.a
+qt(c(.025, .975), df=df)
+```
+
+
+# smoker
 
 ```{r}
 ```
 
+# shoe
 
-
+```{r}
+```
