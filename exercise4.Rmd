@@ -1,0 +1,38 @@
+---
+title: "Stats Homework 4"
+author: "2015-26042 Hyunghun Cho"
+date: "Tuesday, October 04, 2016"
+output: pdf_document
+---
+
+# 5.6 Exercises
+
+## 5.5
+
+
+## 5.6
+
+## 5.7
+
+## 5.11
+
+## 5.17
+
+## 5.18
+
+## 5.20
+
+## 5.22
+
+## 5.32
+
+## 5.34
+
+
+
+
+```{r}
+```
+
+
+
