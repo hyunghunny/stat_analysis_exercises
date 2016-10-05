@@ -91,5 +91,8 @@ shoes.diff <- shoes$shoesOn - shoes$shoesOff
 N.diff <- length(shoes.diff)
 M.diff <- mean(shoes.diff)
 SS.diff <- sum( (shoes.diff - M.diff)^2)
+var.source <- (SS.diff) / (N.diff - 1)
+est_sigma.mm <- sqrt(var.source/N.diff)
+t <- (M.diff - 0) / est_sigma.mm
 t.test(shoes.diff, mu=0)
 ```
