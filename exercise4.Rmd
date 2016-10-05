@@ -65,15 +65,31 @@ qt(c(.05, .95), df=df)
 
 # 95% confidence interval if H0 is that mu.source.b is either greater or lesser than mu.source.a
 qt(c(.025, .975), df=df)
-```
 
+var.test(X.a, X.b)
+```
 
 # smoker
 
-```{r}
+```{r, echo=FALSE}
+nonsmokers <- c(18, 22, 21, 17, 20, 17, 23, 20, 22, 21)
+smokers <- c(16, 20, 14, 21, 20, 18, 13, 15, 17, 21)
+
+plot(density(nonsmokers))
+plot(density(smokers))
+boxplot(nonsmokers,smokers, names=c("nonsmokers","smokers"))
+
+t.test(nonsmokers, smokers, var.equal = TRUE)
 ```
 
 # shoe
 
 ```{r}
+filename <- 'shoes.csv'
+shoes <- read.csv(filename, header=TRUE, sep=",")
+shoes.diff <- shoes$shoesOn - shoes$shoesOff
+N.diff <- length(shoes.diff)
+M.diff <- mean(shoes.diff)
+SS.diff <- sum( (shoes.diff - M.diff)^2)
+t.test(shoes.diff, mu=0)
 ```
