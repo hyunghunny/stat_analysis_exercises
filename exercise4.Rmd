@@ -7,22 +7,76 @@ output: pdf_document
 
 # 5.6 Exercises
 
-## 5.5
+## 5.5 Working backwards I
+A 95% confidence interval for a population mean, mu, is given as (18.985, 21.015). This confidence interval is based on a simple random sample of 36 observations. Calculate the sample mean and standard deviation. Assume that all conditions necessary for inference are satisfied. Use the t-distribution in any calculations.
+
+```{r}
+mu.pop <- c(18.985, 21.015)
+n <- 36
+df <- n - 1
+qt(c(.025, .975), df=df)
+mu.m
+sigma.m
+```
+
+## 5.6 Working backwards II
 
 
-## 5.6
+## 5.7 Sleep habits of New Yorkers
+### (a)
 
-## 5.7
+### (b)
 
-## 5.11
+### (c)
 
-## 5.17
+### (d)
 
-## 5.18
+### (e)
 
-## 5.20
+## 5.11 Play the piano
+### (a)
 
-## 5.22
+### (b)
+
+### (c)
+
+## 5.17 Paired or not? I
+### (a)
+
+### (b)
+
+### (c)
+
+### (d)
+
+## 5.18 Paired or not? II
+### (a)
+
+### (b)
+
+### (c)
+
+## 5.20 High school and Beyond I
+### (a)
+
+### (b)
+
+### (c)
+
+### (d)
+
+### (e)
+
+### (f)
+
+### (g)
+
+## 5.22 High school and Beyond II
+### (a)
+
+### (b)
+
+### (c)
 
 ## 5.32
 
@@ -30,7 +84,6 @@ output: pdf_document
 
 
 # music
-
 
 ```{r}
 filename <- 'music.csv'
