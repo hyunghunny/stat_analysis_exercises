@@ -8,80 +8,241 @@ output: pdf_document
 # 5.6 Exercises
 
 ## 5.5 Working backwards I
-A 95% confidence interval for a population mean, mu, is given as (18.985, 21.015). This confidence interval is based on a simple random sample of 36 observations. Calculate the sample mean and standard deviation. Assume that all conditions necessary for inference are satisfied. Use the t-distribution in any calculations.
+
+Based on the formulars, T df is Marginal Error(ME) over SE and SE is s over sqrt(n). Therefore, S is calculated with (ME * sqrt(n) / T df)
+T df can be obtained from t distribution probability table or qt() function when degree of freedom is (n-1).
+Finally, s can be calculated as below:
 
 ```{r}
-mu.pop <- c(18.985, 21.015)
+mu.x <- (18.985 + 21.015)/2
+margin.err <- mu.x - 18.985
 n <- 36
 df <- n - 1
-qt(c(.025, .975), df=df)
-mu.m
-sigma.m
+conf <- .975 # 95% confidence level
+t.df <- qt(conf, df=df)
+s.x <- margin.err * sqrt(n) / t.df
+print(s.x)
+
 ```
 
 ## 5.6 Working backwards II
-
+As above, sample mean, ME and s.x can be calcuated as below: 
+```{r}
+conf <- 0.95 # 09% confidence level
+n <- 25
+df <- n - 1
+mu.x <- (65 + 77) / 2
+print(mu.x)
+margin.err <- mu.x - 65
+print(margin.err)
+t.df <- qt(conf, df=df)
+s.x <- margin.err * sqrt(n) / t.df
+print(s.x)
+```
 
 ## 5.7 Sleep habits of New Yorkers
-### (a)
+```{r}
+n <- 25 # number of sample 
+mu.x <- 7.73
+s.x <- 0.77
+min <- 6.17
+max <- 9.78
+null <- 8
+```
 
-### (b)
+### (a) 
+H.0: mu = 8, New Yorkers sleep 8 hours / night on average.
+H.a : mu < 8, New Yorkers sleep less than 8 hours / night on average.
+
+### (b) 
+Independence: sample is random and from less than 10% of population. I will use *t-distribution* because sample is small. skew is acceptable because its difference is just 0.49. degree of freedom and T are as below:
+```{r}
+skew.right <- mu.x - min
+skew.left <- mu.x - max
+skew.diff <- abs(abs(skew.right) - abs(skew.left))
+df <- n - 1
+print (df)
+SE <- s.x / sqrt(n)
+t.df <- (mu.x - null) / SE
+print (t.df)
+```
 
 ### (c)
+p-value lie between 0.025 and 0.05 if New Yorkers sleep less than 7.73 hours per night on average. 
+```{r, echo=FALSE}
+p.val <- pt(t.df, df=df, lower.tail = FALSE)
+print (p.val)
+```
 
-### (d)
+### (d) p value is less than 0.05. Therefore, null hypothesis is rejected.  Strong evidence is supported by the data that New Yorkers sleep less than 8 hours.   
 
-### (e)
+### (e) No, T value for 90% confidence interval is larger than T df. Therefore, null hypothesis is rejected also. 
+```{r}
+t <- qt(.9, df=df, lower.tail = FALSE)
+print(t)
+
+```
 
 ## 5.11 Play the piano
-### (a)
+
+```{r}
+n <- 20
+mu.x <- 4.6
+s.x <- 2.2
+df <- n - 1
+```
+
+### (a) 
+H.0: mu = 5, the average child takes 5 years of piano lessons
+H.a: mu.x > 5, the average child takes at least 5 years of piano lessons.
+
+p value is about 0.21. It is bigger than 0.05. Therefore null hypothesis can not be rejected. I have no strong evidence to reject Georgianna's claim.
+
+```{r}
+null <- 5
+SE <- s.x / sqrt(n)
+t.df <- (mu.x - null) / SE
+print (t.df)
+p.val <- 1- pt(t.df, df=df, lower.tail = FALSE)
+print (p.val)
+```
 
 ### (b)
-
+The 95% confidence iterval is as below. Therefore we are 95% confident that the average number of years a child takes piano lessons in this city is 3.57 to 5.63 years.
+```{r}
+t.critical <- qt(.025, df=df, lower.tail = FALSE)
+conf <- c(mu.x - (t.critical * SE) ,  mu.x + (t.critical * SE)) 
+print(conf)
+```
 ### (c)
+Yes, I agree that I did not reject the null hypothesis and the null value is in t-interval
+
 
 ## 5.17 Paired or not? I
-### (a)
+### (a) 
+Paired if the students at the begining and at the end of the semester are same.  
 
-### (b)
+### (b) 
+Not paired if the subjects were randomly sampled
 
-### (c)
+### (c) 
+Paired if the group of patient is same at the beginning and after 2 years.
 
-### (d)
+### (d) 
+Paired if the subjects are same at begining and at end.
 
 ## 5.18 Paired or not? II
-### (a)
 
-### (b)
+### (a) 
+Not paired even if the trend of stocks between Intel's and Southwest Airline's look related.
 
-### (c)
+### (b) 
+Paired if the randomly sampled items are identical both Target store and Walmart.
+
+### (c) 
+Not paired if the randomly sampled students are not identical in each high school.
 
 ## 5.20 High school and Beyond I
-### (a)
+### (a) 
+No, there isn't. The box plot depicts no significant differences between reading and writing.
 
-### (b)
+### (b) 
+No, if randomly sampled student are identical in both reading and writing.
 
-### (c)
+### (c) 
+H.0: mu.diff = 0, there is no differences in both reading and writing scores of random sampled 200 students.  
+H.a : mu.diff <> 0, there is differences in both reading and writing scores of random sampled 200 students.
 
 ### (d)
+Independence: sample is random and from less than 10% of population. skew is acceptable.
 
-### (e)
+### (e) 
+No, the p-value is larger than 0.05 as below. Therefore null hypothesis can not be rejected. I have no strong evidence to convince evidence of a difference between the average scores on two exams.
+
+```{r}
+mu.x <- -0.545
+n <- 200
+df <- n - 1
+s.x <- 8.887
+null <- 0
+SE <- s.x / sqrt(n)
+t.df <- (mu.x - null) / SE
+p.val <- pt(t.df, df=df, lower.tail = FALSE)
+print (p.val)
+
+```
 
 ### (f)
+Type 2 Error, since we may have incorrectly failed to reject H.0
+There may be a difference on two exams, but I was unable to detect it.
 
 ### (g)
+Yes, since I failed to reject H.0 which has a null value of 0.
 
 ## 5.22 High school and Beyond II
 ### (a)
-
+The 95% confidence iterval is as below. 
+```{r}
+t.critical <- qt(.025, df=df, lower.tail = FALSE)
+conf <- c(mu.x - (t.critical * SE) ,  mu.x + (t.critical * SE)) 
+print(conf)
+```
 ### (b)
+I am 95% confident that the average differences on two exam is between -1.78 and 0.69.
 
 ### (c)
+No, since 0 is included in the interval
 
-## 5.32
+## 5.32 Fuel efficiency of manual and automatic cars I
+Yes, the p-value is smaller than 0.01 as below. Therefore null hypothesis can be rejected. I have a strong evidence to convince evidence of a difference between the average fuel efficiency of cars with manual and automatic transmissions.
 
-## 5.34
+```{r}
+N.a <- 26
+N.b <- 26
+M.a <- 16.12
+M.b <- 19.85
+SD.a <- 3.58
+SD.b <- 4.51
+diff.mean <- M.a-M.b
+SS.a <- SD.a^2 * (N.a - 1)
+SS.b <- SD.b^2 * (N.b - 1)
+df <- (N.a - 1) + (N.b - 1)
+# by null hypothesis, mu.source.a and mu.source.b is identical
+mu.mm <- 0
 
+var.source <- (SS.a + SS.b) / ((N.a - 1) + (N.b - 1))
+est_sigma.mm <- sqrt(var.source/N.a + var.source/N.b)
+t <- (M.a - M.b) / est_sigma.mm
+print (t)
+p.val <- 1- pt(t, df=df, lower.tail = FALSE)
+print (p.val)
+```
+
+## 5.34 Fuel efficiency of manual and automatic cars II
+I am 98% confident that the differences between average highway mileage of  manual and automatic cars is not between -2.05 and 0.96.
+```{r}
+N.a <- 26
+N.b <- 26
+M.a <- 22.92
+M.b <- 27.88
+SD.a <- 5.29
+SD.b <- 5.01
+diff.mean <- M.a-M.b
+SS.a <- SD.a^2 * (N.a - 1)
+SS.b <- SD.b^2 * (N.b - 1)
+df <- (N.a - 1) + (N.b - 1)
+# by null hypothesis, mu.source.a and mu.source.b is identical
+mu.mm <- 0
+
+var.source <- (SS.a + SS.b) / ((N.a - 1) + (N.b - 1))
+est_sigma.mm <- sqrt(var.source/N.a + var.source/N.b)
+t <- (M.a - M.b) / est_sigma.mm
+print (t)
+
+t.critical <- qt(.01, df=df, lower.tail = FALSE) # 98% confidence interval
+conf <- c(mu.x - (t.critical * SE) ,  mu.x + (t.critical * SE)) 
+print(conf)
+```
 
 # music
 
