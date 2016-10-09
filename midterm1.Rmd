@@ -1,0 +1,164 @@
+---
+title: "Midterm-1 exercise"
+author: "2015-26042 Hyunghun Cho"
+date: "Sunday, October 09, 2016"
+output: pdf_document
+---
+
+# 1. box plotting
+
+```{r, echo=FALSE}
+scores <- c(79, 83, 57, 82, 99, 83, 72, 74, 73, 51)
+boxplot(scores)
+```
+
+# 2. HIV testing 
+
+```{r}
+infected <- 0.25
+not_infected <- 1 - infected
+
+true.positive <- 0.99
+true.negative <- 1 - true.positive
+false.positive <- 0.9
+false.negative <- 1 - false.positive
+
+infected.tested <- infected * true.positive + not_infected * false.negative
+not_infected.testd <- 1 - infected.tested
+print (infected.tested)
+```
+
+# 3. HIV testing again 
+
+```{r}
+infected <- infected.tested
+not_infected <- 1 - infected
+
+true.positive <- 0.99
+true.negative <- 1 - true.positive
+false.positive <- 0.9
+false.negative <- 1 - false.positive
+
+infected.tested <- infected * true.positive + not_infected * false.negative
+not_infected.testd <- 1 - infected.tested
+print (infected.tested)
+```
+
+# 4. type 1 and type 2 error
+## (a)
+type 1 error: 테스트에서 검출한 결과가 실제 결과가 아닐 경우. false positive 
+type 2 error: 테스트에서 검출하지 못한 결과가 실제 결과일 경우. false negative
+## (b)
+type 1 error로 테스트한 결과로 검출한 결과가 실제 결과가 아닐 경우를  현실에서 만날 확률을 의미하며 귀무가설이 참일 경우의 가능성과 유사 
+## (c)
+type 2 error로 범인이 아닌 사람을 범인이라고 판단하는 경우로 무고한 사람에게 징역 생활을 강요하게 되기 때문임 
+
+# 5. P(A) = 0.2, P(B) = 0.8
+## (a) P(A and B)?
+A와 B가 서로 독립 사건일 경우에만 계산 가능
+
+## (b)
+```{r}
+P.a <- 0.2
+P.b <- 0.8
+P.a_and_b <- P.a * P.b
+P.a_or_b <- P.a + P.b
+```
+
+## (c)
+No
+
+## (d)
+I don't know
+
+
+# 6. 
+## (a)
+```{r}
+prob <- 0.75 * 0.75 * 0.75 * 0.25
+print(prob)
+```
+
+## (b)
+```{r}
+prob1 <- 0.25 * 0.25 * 0.25 * 0.25 * 0.75
+prob2 <- 0.25 * 0.25 * 0.25 * 0.25 * 0.25
+print(prob1 + prob2)
+```
+
+## (c)
+```{r}
+n <- 5
+prob <- 0.25
+print(n * prob)
+```
+
+# 7. 
+## (a)
+```{r}
+made_prob <- .75
+miss_prob <- 1 - made_prob
+
+prob <- made_prob^5 * miss_prob^(9-5)
+print(prob)
+```
+
+## (b)
+```{r}
+prev_prob <- made_prob^4 * miss_prob^(9-4)
+prob <- prev_prob * made_prob
+print(prob)
+
+```
+
+## (c)
+I don't know
+
+
+# 8.
+
+```{r}
+a <- c(1, 2, 3, 4, 5)
+b <- c(3, 4, 5, 6, 7)
+total <- c(a, b)
+N.a <- length(a)
+N.b <- length(b)
+sum.a <- sum(a)
+sum.b <- sum(b)
+mean.a <- mean(a)
+mean.b <- mean(b)
+mean.total <- mean(total)
+sum.a.sqr <- sum(a^2)
+sum.b.sqr <- sum(b^2)
+sum.total.sqr <- sum(total^2)
+SS.a <- sum((a - mean.a)^2)
+SS.b <- sum((b - mean.b)^2)
+SS.total <- sum((total - mean.total)^2)
+df <- (N.a - 1)  + (N.b - 1)
+var.pooled <- (SS.a + SS.b) / df
+est_sigma.mm <- sqrt(var.pooled/N.a + var.pooled/N.b)
+t <- (mean.a - mean.b) / est_sigma.mm
+print (t)
+p.val <- pt(t, df=df, lower.tail = TRUE)
+print (p.val)
+t.test(a, b, var.equal=TRUE)
+```
+
+# 9. 
+mu has in the interval.
+```{r}
+N <- 35
+x.bar <- 134
+mu <- 130
+sigma <- 17
+conf <- 1.96 # 95% confidence interval
+interval <- c( x.bar - (conf * sigma / sqrt(N)), x.bar + (conf * sigma / sqrt(N)))
+print (interval)
+
+```
+
+# 10.
+```{r}
+
+```
+
