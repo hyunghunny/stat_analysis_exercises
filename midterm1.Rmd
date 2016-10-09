@@ -23,25 +23,22 @@ true.negative <- 1 - true.positive
 false.positive <- 0.9
 false.negative <- 1 - false.positive
 
-infected.tested <- infected * true.positive + not_infected * false.negative
-not_infected.testd <- 1 - infected.tested
-print (infected.tested)
+infected.tested <- infected * true.positive
+infected.all <- infected * true.positive + not_infected * false.negative
+not_infected.all <- 1 - infected.tested
+print (infected.tested/infected.all)
 ```
 
 # 3. HIV testing again 
 
 ```{r}
-infected <- infected.tested
+infected <- infected.all
 not_infected <- 1 - infected
 
-true.positive <- 0.99
-true.negative <- 1 - true.positive
-false.positive <- 0.9
-false.negative <- 1 - false.positive
-
-infected.tested <- infected * true.positive + not_infected * false.negative
-not_infected.testd <- 1 - infected.tested
-print (infected.tested)
+infected.tested <- infected * true.positive
+infected.all <- infected * true.positive + not_infected * false.negative
+not_infected.all <- 1 - infected.tested
+print (infected.tested/infected.all)
 ```
 
 # 4. type 1 and type 2 error
@@ -62,14 +59,21 @@ A와 B가 서로 독립 사건일 경우에만 계산 가능
 P.a <- 0.2
 P.b <- 0.8
 P.a_and_b <- P.a * P.b
-P.a_or_b <- P.a + P.b
+P.a_or_b <- P.a + P.b - P.a_and_b
 ```
 
 ## (c)
-No
+No, if A and B is independent, P(A) is identical to P(A|B). however, P(A) is 0.2 but P(A|B) is 0.125.
+```{r}
+P.a_and_b <- 0.1
+P.a_bar_b <- P.a_and_b / P.b
+
+```
 
 ## (d)
-I don't know
+```{r}
+print(P.a_bar_b)
+```
 
 
 # 6. 
@@ -86,7 +90,7 @@ prob2 <- 0.25 * 0.25 * 0.25 * 0.25 * 0.25
 print(prob1 + prob2)
 ```
 
-## (c)
+## (c) Still mysterious ... confirmation needed
 ```{r}
 n <- 5
 prob <- 0.25
@@ -96,23 +100,28 @@ print(n * prob)
 # 7. 
 ## (a)
 ```{r}
+n <- 10
+success <- 5
 made_prob <- .75
 miss_prob <- 1 - made_prob
 
-prob <- made_prob^5 * miss_prob^(9-5)
+prob <- choose(n, success) * made_prob^success * miss_prob^(n-success)
 print(prob)
 ```
 
 ## (b)
 ```{r}
-prev_prob <- made_prob^4 * miss_prob^(9-4)
+n <- 9
+success <- 4
+
+prev_prob <- choose(n, success) * made_prob^success * miss_prob^(n-success)
 prob <- prev_prob * made_prob
 print(prob)
 
 ```
 
 ## (c)
-I don't know
+With (b), the combination of scenarios is limited that (a)
 
 
 # 8.
@@ -159,6 +168,24 @@ print (interval)
 
 # 10.
 ```{r}
-
+obs <- c(5, 6, 7, 8, 5, 6, 7, 8, 6, 7)
+mu.x <- mean(obs)
+n <- length(obs)
+df <- n - 1
+SS <- sum((obs - mu.x)^2) 
+s.x <- sqrt((SS / (n - 1)) / n)
+null <- 0
+SE <- s.x / sqrt(n)
+conf_level <- .975
+t.df <- qt(conf_level, df=df)
+print(t.df)
+interval <- c(mu.x - t.df * SE, mu.x + t.df * SE)
+print(interval)
 ```
+
+# 11. Normal distribution vs. t-distribution
+모집단, 샘플 집단,  degree of freedom
+
+
+# 12.
 
