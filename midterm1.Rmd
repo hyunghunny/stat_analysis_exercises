@@ -2,7 +2,10 @@
 title: "Midterm-1 exercise"
 author: "2015-26042 Hyunghun Cho"
 date: "Sunday, October 09, 2016"
-output: pdf_document
+output: 
+  pdf_document:
+    includes:
+      in_header: header.tex
 ---
 
 # 1. box plotting
@@ -43,10 +46,12 @@ print (infected.tested/infected.all)
 
 # 4. type 1 and type 2 error
 ## (a)
-type 1 error: 테스트에서 검출한 결과가 실제 결과가 아닐 경우. false positive 
-type 2 error: 테스트에서 검출하지 못한 결과가 실제 결과일 경우. false negative
+type 1 error: reject null hypothesis when H0 is true. false positive 
+type 2 error: can not reject null hypothesis when HA is true. false negative
+
 ## (b)
 type 1 error로 테스트한 결과로 검출한 결과가 실제 결과가 아닐 경우를  현실에서 만날 확률을 의미하며 귀무가설이 참일 경우의 가능성과 유사 
+
 ## (c)
 type 2 error로 범인이 아닌 사람을 범인이라고 판단하는 경우로 무고한 사람에게 징역 생활을 강요하게 되기 때문임 
 
