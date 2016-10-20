@@ -1,0 +1,47 @@
+---
+title: 'Stats Homework #5'
+author: "2015-26042 Hyunghun Cho"
+date: "Friday, October 21, 2016"
+output: 
+  pdf_document:
+    includes:
+      in_header: header.tex
+---
+
+# Example 
+## p.15
+
+```{r}
+summary(cars)
+```
+
+## p.24
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+## P.57
+
+```{r}
+
+```
+
+# Exercises 
+
+## 5.44
+
+
+## 5.45
+
+
+## 5.49
+
+
+## 5.51
+
+
+## 5.52
+
+
+# Paper summary (One way ANOVA)
