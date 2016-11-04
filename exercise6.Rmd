@@ -1,0 +1,24 @@
+---
+title: 'Stats Homework #6'
+author: "2015-26042 Hyunghun Cho"
+date: "Friday, October 28, 2016"
+output: pdf_document
+---
+
+# Kruskal-Wallis Test
+
+```{r}
+kw <- read.csv(file="kruskalwallis.csv", header=T, sep=",")
+anova <- aov(score~dosage, data=kw)
+print (anova)
+print (summary(anova))
+print (kruskal.test(score~dosage, data=kw))
+```
+
+# Friedman Test
+
+```{r}
+violin <- read.csv(file="violin.csv", header=T, sep=",")
+print (friedman.test(score~violin | subject, data=violin))
+```
+

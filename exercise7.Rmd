@@ -1,0 +1,97 @@
+---
+title: 'Stats Homework #7'
+author: "2015-26042 Hyunghun Cho"
+date: "2016년 11월 4일"
+output: 
+  pdf_document:
+    includes:
+      in_header: header.tex
+---
+
+# Analysis Exercise
+
+## Two way mixed ANOVA
+
+```{r, two_way_mixed_anova}
+hill <- read.csv(file="hill.csv")
+print (summary(hill))
+with(hill, boxplot(SSS ~ diet + test))
+result <- summary(aov(SSS ~ diet * test + Error(subject/test), data=hill))
+print(result)
+```
+
+## Two way RM ANOVA
+
+```{r two_way_rm_anova}
+library(ez)
+rm.data <- read.csv(file="rm.data.csv")
+# column type casting
+rm.data$Subject <- as.factor(rm.data$Subject)
+rm.data$Orientation <- as.factor(rm.data$Orientation)
+rm.data$Distortion <- as.factor(rm.data$Distortion)
+print(summary(rm.data))
+
+result <- ezANOVA(rm.data, wid = .(Subject), dv = .(Rating), within = .(Orientation, Distortion))
+print (result)
+```
+# Exercise with pseudo genetated dataset
+
+## Two way Mixed ANOVA
+ * 비타민을 포함한 과일 섭취가 인지 반응에 미치는 영향력을 살펴 보기 위한 실험 계획
+
+ *  20 대 연령을 가진 피험자를 모집하여 임의로 열 명을 선정 
+ 
+ * 과일 섭취 종류에 따라 레몬을 먹는 집단과 귤을 먹는 피험자를 반반으로 나눔
+ 
+ * 비타민 과다 섭취를 막기 위해 중복 제공하지 않음 (between factor)
+ 
+ * 섭취 전 1회와 섭취 후 2회 실험으로 각각의 반응 속도를 측정하되 시험 간의 간섭(interaction)을 막기 위해 휴식 시간을 제공 (10 msec 단위)
+
+ 
+```{r}
+mixed <- read.csv(file="mixed.csv")
+print (summary(mixed))
+with(mixed, boxplot(ResponseTime ~ Treatment + Test))
+result <- summary(aov(ResponseTime ~ Treatment * Test + Error(Subject/Test), data=mixed))
+print(result)
+```
+  * Mixed ANOVA 수행 결과를 분석 결과 피험자의 반응 속도는 과일 섭취 여부에 유의미한 상관관계가 있음 (F(1, 9)=29.92 p < .001)
+
+
+
+## Two way RM ANOVA
+
+ * 열 명의 피험자를 대상으로 사물인터넷 기기 별 인터페이스에 따른 수행 능력을 평가
+ 
+ * 두 개의 독립변수(independent variables): 기기 2종 (light, door), 사용자 인터페이스 3종(touch, audio, gesture) 에 대해 고려
+ 
+ * 하나의 종속 변수(dependent variable)인 수행 능력 평가 점수를 측정 (평균 73.7점, 표준편차 5.6 점)  
+  
+ * 두개의 독립 변수인 Device와 User Interface의 실험 순서는 randomized 함
+ 
+ * 각 피험자 별로 각각 6 번의 시행 (six trials) : 2 기기 X  3 인터페이스
+
+```{r}
+rm.data <- read.csv(file="iot.csv")
+print (summary(rm.data))
+print (mean(rm.data$Score))
+print (sd(rm.data$Score))
+result <- ezANOVA(rm.data, wid = .(Subject), dv = .(Score), within = .(Device, Interface))
+print (result)
+
+```
+ * 2 factor repeated-measure ANOVA를 독립 변수 각각에 대한 factor에 수행
+ 
+ * Pairwise comparision 은 paired sample t-test 로 하되 sphericity 확인을 위한 Mauchly's Test 및 Sphericity Corrections 을 수행
+ 
+ * Mauchly's Test 결과 인터페이스와 기기 모두 유의미하지 않기 때문에 correction 을 통해 p-value를 조정
+ 
+ 
+```{r}
+
+boxplot(Score ~ Device + Interface, data = rm.data)
+```
+
+ * 디바이스의 차이에 따른 수행 평가 점수의 차이는 유의미하지 않음 (F1,9=0,98 p = .35)
+ 
+ * 인터페이스 차이만 수행 평가 점수에 유의미한 영향을 끼침 (F2,18=4.27; p<.05) 

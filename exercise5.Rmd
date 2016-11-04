@@ -9,39 +9,168 @@ output:
 ---
 
 # Example 
-## p.15
+## p.15 Wilcoxon test exercise
 
 ```{r}
-summary(cars)
+data <- read.csv('wilcoxn.csv')
+t.test(data$score~data$group, var.equal=T)
+wilcox.test(data$score~data$group)
 ```
 
-## p.24
-
-```{r, echo=FALSE}
-plot(cars)
-```
-
-## P.57
+## p.24 Wilcoxon Signed-Rank Test
 
 ```{r}
+signed <- read.csv('signed_rank_test.csv')
+wilcox.test(signed$XA, signed$XB, paired=T)
+```
 
+## P.57 One-way ANOVA for Independent Samples
+
+```{r}
+treatment <- read.csv('treatment.csv')
+anova <- aov(score ~ dosage, data=treatment)
+print (anova)
+summary(anova)
 ```
 
 # Exercises 
 
-## 5.44
+## 5.44 Teaching descriptive statistics
+
+### (a)
+H0: the population mean of each method for teaching descriptive statistics is equal to the others.
+HA: At least one mean is different than others.
+
+### (b)
+```{r}
+group <- 5
+n <- 45
+df.group <- group - 1
+print (df.group)
+df.total <- n - 1
+print (df.total)
+df.error <- df.total - df.group
+print (df.error)
+```
+### (c) 
+p-value = 0.0168 > 0.05, we reject H0.
+The data provide convicing evidence that the average score after teaching each methods differs between at least one group.
+
+## 5.45 Coffee, depression, and physical activity
+
+### (a)
+H0: The population mean of MET for each group is equal to the others
+HA: At least one pair of means is different
+
+### (b)
+- Independence: we can not assess the independence if we do not know how to collect the data. We should assume the subjects in each group are independent to proceed.  
+- Nearly normal: The data seems to be very strong skewed because the SD are larger than mean. However, since the sample size is very large, even the strong skew is acceptable. 
+- Variability: It is sufficient because the each SD of each group is consistent.
+
+### (c)
+```{r}
+mean.groups <- c(18.7, 19.6, 19.3, 18.9, 17.5)
+n.groups <- c(12215, 6617, 17234, 12290, 2383)
+group <- length(mean.groups)
+n.total <- sum(n.groups)
+df.coffee <- group - 1
+df.total <- n.total - 1
+print(df.total)
+print(df.coffee)
+df.residurals <- df.total - df.coffee
+print(df.residurals)
+
+mean.all <- mean(mean.groups)  
+SS.total <- 25575327
+SS.residuals <- 25564819 
+SS.coffee <- SS.total - SS.residuals
+print (SS.coffee)
+MS.coffee <- SS.coffee / df.coffee
+MS.residuals <- SS.residuals / df.residurals
+print (MS.coffee)
+print (MS.residuals)
+f.value <- MS.coffee / MS.residuals
+print (f.value)
+```
+
+### (d)
+Since the p = 0.0003, we reject H0.
+the data provide convicing that the average MET differs between at least one pair of groups.
+
+## 5.49 True / False
+
+### (a)
+False. The modified significance decresed since the number of groups increased.
+
+### (b)
+True.
+
+### (c)
+True.
+
+### (d)
+False. Even the sample size is large, observation to be independent is required  
+
+## 5.51 Prison isolation experiment
+
+### (a)
+H0: average score difference is the same for all treatments.
+HA: At least one pair of means are different.
+
+### (b)
+Since the conditions such as independence, nearly normal and variablity are satisfied, H0 is rejected because P value (0.0461) is less than 0.05.
+The data provide convincing evidence of a difference between average reduction in score among treatments.
+
+### (c) 
+K = 3 * 2/2 and alpha = 0.05/3 for a significance level.
+H0: The two means are equal.
+HA: THe two means are differnce.
+Using pooled variance, SE=3.7 and pooled df = 39.
+The p-value only for treatment 1 and 3 may be statistically significant.
+
+## 5.52 True / False
+
+### (a)
+False. At least one paireof means are different.
+
+### (b)
+False. Since F is less than 0.05, variability between groups(V-bet.) should be extremly less than variablity within groups(V-w/in) because F is V-bet. over V-w/in.
+
+### (c)
+True.
+
+### (d)
+True.
+
+# Paper (One way ANOVA used)
+
+## Title
+The Effect of Gamification on Students with Different Achievement Goal Orientations
+
+## Authors
+Lasse Hakulinen and Tapio Auvinen
+
+## Summary
+
+이 논문은 성취 목표 지향(achievement goal orientation)에 관련한 gamification을 조사한 연구에 관한 것으로, 여기서 성취 목표 지향이란 다른 목표들, 결과 혹은 보상에 대한 학생의 선호를 특징짓는 심리학적인 개념화를 뜻한다.
+실험은 총 278명이 참여한 데이터 구조와 알고리즘 수업에서 활용한 온라인 학습환경에 성취 배지(achievement badges)를 추가해서, 학생 별로 다른 성취 목표 지향 프로필을 작성하게 한 후 이를 평가하였다.
+더 나아가, 성취 목표 지향과 행동의 측면에서 배지에 가장 동기 부여가 된 학생들은 그렇지 않은 다른 학생들과 비교해 어떻게 다른지를 one-way ANOVA, A Kruskal-Wallis test 및 Tukey HSD를 이용해 분석하였다.
+
+온라인 학습환경에서 수집한 로그 데이터를 분석했을 때 결과적으로는 배지와 관련된 다른 목표 지향 집단의 행위에서 유의미한 결과를 찾지는 못했지만 배지에 대한 그들의 태도는 다양함을 알 수 있었다. 
+집단을 4 개의 cluster로 나눠서 각각 *A: avoidance-oriented (N=27), B: mastery-oriented (N=79), C: indifferent(N=61)* 그리고 *D: success-oriented(N=111)* 로 labeling 하고 각각 이 집단 내에서의 평균 성취 목표 지향 프로필을 기준으로 각각 *mastery intrinsic, masteric extrinsic, performance appoach, performance avoidance, avoidance* 로 구분하였다.
+One-way ANOVA를 사용해 각각의 집단이 다름을 확인할 때 모든 목표 지향 dimension의 p-value가 0.001 이하로 유의미한 차이가 있다는 것을 알 수 있었다. (mastery intrinsic: F(3, 274)=42.7, mastery extrinsic: F(3, 274)=112.2, performance approach: F(3,274)=74.9, performance avoidance: F(3,274)=95.0, avoidance:F(3,274)=46.2) 
+또한 그룹 간의 차이를 확인하기 위해 one-way ANOVA를 사용한 결과 네 집단 간의 성적이 유의미하게 다르고(F(3,274)=3.156, p=0.03) 성적 목표가 다름(F(3, 269)=26.42, p<0.01)을 알 수 있었다. 
+
+반면에 배지에 대해 높은 동기를 얻는다고 한 학생들이 남들보다 높은 mastery-intrinsic, mastery-extrinsic, performance-approach 지향을 가지고 낮은 avoidence 지향을 갖는 것을 알 수 있었다. 
+이 네 집단의 학점은 유의미하게 다르고(F(3,274)=3.156, p=0.03) 수업의 첫번째 중반에서 얻은 점수 역시 유의미하게 달랐지만 (F(3,274)=8.199 p<0.01) pre-test 점수는 유의미하게 다르지 않았다. (F(3, 210) = 2.101, p=0.1)
+
+이런 학생들은 배지를 주기 전에도 이미 좋은 성적을 거두고 있었지만 잘하고 있는 학생들에게 배지를 준다고 해서 동기가 부여되지는 않았다. 
+Kruskal-Wallis test가 다른 목표 지향을 가지는 집단 간의 학생 피드백 사이의 차이를 확인하기 위해 사용되었다.
+
+배지에 대해 매우 낮은 동기가 있다고 한 작은 avoidance 집단을 구분할 수 있었다.
+배지의 동기부여에 대한 집단의 성취 목표 지향 프로필 간의 차이를 알기 위해 one-way ANOVA를 사용했다.
+one-way ANOVA로 그룹 간의 유의미한 차이를 보였던 경우에서 pairwise differences를 확인하기 위해 Tukey HSD test가 사용되었다. 
 
 
-## 5.45
+이 연구는 학생들이 gamification 에 다르게 반응하는 이유와 gamification에 대한 동기 부여에 공헌할 수 있는 내재된 동기적인 특성이 무엇인지에 대해 해명하고 있다.
 
-
-## 5.49
-
-
-## 5.51
-
-
-## 5.52
-
-
-# Paper summary (One way ANOVA)
