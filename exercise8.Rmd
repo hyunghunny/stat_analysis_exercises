@@ -47,20 +47,51 @@ chisq.test(scores)
 ## 6.26 The Daily Show
 
 ### (a)
+True, 귀무가설인 두 집단 간의 차이가 없다면 confidence interval 사이에 0이 있어야 하는데 존재하지 않으므로 차이가 없다는 귀무가설을 기각한다.
 
 ### (b)
+False, 두 집단의 차이의 평균 값이 95% 신뢰 수준에서 0.07과 0.15 사이에 존재한다는 의미이지 대졸 이상 학력자들이 고졸 이하 학력자들보다 the Daily Show를 7% 미만 혹은 15% 이상 시청한다는 의미는 아니다. 
 
 ### (c)
+True
 
 ### (d)
+True
 
 ### (e)
+False, 신뢰 수준은 변하지 않는다.
 
 ## 6.29 Offshore drilling, Part I
+```{r}
+answers <- matrix(c(154, 132, 180, 126, 104, 131), ncol=2, byrow = TRUE)
+colnames(answers) <- c("Graduates", "Non graduates")
+rownames(answers) <- c("Support", "Oppose", "Do not know")
+answers <- as.table(answers)
+print(answers)
+```
 
 ### (a)
+```{r}
+total.survey <- sum(answers)
+p_hat.grad <- sum(answers["Do not know", "Graduates"]) / sum(answers[, "Graduates"])
+print(p_hat.grad)
+p_hat.non_grad <- sum(answers["Do not know", "Non graduates"]) / sum(answers[, "Non graduates"])
+print(p_hat.non_grad)
+
+```
 
 ### (b)
+만일 대졸 이상 학력자 중에서 "모른다"고 응답한 비율을 prop.grad 이라고 하고 고졸 이하 학력자 중에서 동일하게 응답한 비율을 prop.non_grad 라고 한다면 귀무가설은 prop.grad 와 prop.non_grad 가 같다이고 대립 가설은 prop.grad 와 prop.non_grad 가 같지 않다가 된다.
+random sampling 이고 샘플의 숫자가 각각 모수의 10% 이하 임으로 독립을 만족시킨다. success-failure condition 확인을 위해 pooled proportion p.hat 은 다음과 같이 만족한다.
+```{r}
+p_hat <- sum(answers["Do not know",]) / sum(answers)
+print(p_hat)
+z <-  (p_hat.grad - p_hat.non_grad) / sqrt((p_hat * (1-p_hat)) / sum(answers[, "Graduates"]) + (p_hat * (1-p_hat)) / sum(answers[, "Non graduates"]))
+print(z)
+p_value <- pnorm(-abs(z)) * 2
+print(p_value)
+```
+p-value 가 .01 미만으로 매우 작으므로 귀무가설을 기각한다.  따라서 이 데이터는 대졸 이상 학력자가 모른다라고 응답한 비율과 고졸 이하의 학력자가 모른다고 응답한 비율이 서로 다르다는 것을 보여주는 증거를 제공한다. 
 
 ## 6.31 Offshore drilling, Part II
 
