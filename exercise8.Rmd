@@ -1,0 +1,90 @@
+---
+title: 'Stats Homework #8'
+author: "2015-26042 Hyunghun Cho"
+date: "2016년 11월 10일"
+output:
+  pdf_document:
+    includes:
+      in_header: header.tex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Analysis Exercises
+## Goodness of fit test
+
+```{r}
+voters.observed <- c(338, 136, 30)
+voters.all <- sum(voters.observed)
+votes.reported <- c(0.6329, 0.341, 0.0261)
+voters.length <- length(voters.observed)
+df.voters <- length(voters.observed) - 1
+chi.square <- 0
+for (i in 1:voters.length) {
+  result <- (voters.observed[i] - voters.all * votes.reported[i])^2 / (voters.all * votes.reported[i])
+  chi.square <- chi.square + result
+}
+print(chi.square)
+p.value <- pchisq(q = chi.square, df = df.voters, lower.tail = FALSE)
+print(p.value)
+```
+
+## Chi-Square test of independence
+
+```{r}
+scores <- matrix(c(63, 31, 25, 88, 55, 33, 96, 55, 32), ncol=3, byrow = TRUE)
+colnames(scores) <- c("Grades", "Popular", "Sports")
+rownames(scores) <- c("4th", "5th", "6th")
+scores <- as.table(scores)
+print(scores)
+chisq.test(scores)
+```
+
+# 6.7 Exercises
+
+## 6.26 The Daily Show
+
+### (a)
+
+### (b)
+
+### (c)
+
+### (d)
+
+### (e)
+
+## 6.29 Offshore drilling, Part I
+
+### (a)
+
+### (b)
+
+## 6.31 Offshore drilling, Part II
+
+### (a)
+
+### (b)
+
+## 6.44 Barking deer
+
+### (a)
+
+### (b)
+
+### (c)
+
+### (d)
+
+## 6.47 Offshore drilling, Part III
+
+
+
+## 6.49 Shipping holiday gifts
+
+### (a)
+
+### (b)
+
