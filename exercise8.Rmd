@@ -23,7 +23,9 @@ voters.length <- length(voters.observed)
 df.voters <- length(voters.observed) - 1
 chi.square <- 0
 for (i in 1:voters.length) {
-  result <- (voters.observed[i] - voters.all * votes.reported[i])^2 / (voters.all * votes.reported[i])
+  result <- (voters.observed[i] - voters.all * 
+      votes.reported[i])^2 / (voters.all *
+      votes.reported[i])
   chi.square <- chi.square + result
 }
 print(chi.square)
@@ -64,7 +66,7 @@ False, 신뢰 수준은 변하지 않는다.
 ## 6.29 Offshore drilling, Part I
 ```{r}
 answers <- matrix(c(154, 132, 180, 126, 104, 131), ncol=2, byrow = TRUE)
-colnames(answers) <- c("Graduates", "Non graduates")
+colnames(answers) <- c("Graduates", "Nongraduates")
 rownames(answers) <- c("Support", "Oppose", "Do not know")
 answers <- as.table(answers)
 print(answers)
@@ -75,18 +77,21 @@ print(answers)
 total.survey <- sum(answers)
 p_hat.grad <- sum(answers["Do not know", "Graduates"]) / sum(answers[, "Graduates"])
 print(p_hat.grad)
-p_hat.non_grad <- sum(answers["Do not know", "Non graduates"]) / sum(answers[, "Non graduates"])
-print(p_hat.non_grad)
+p_hat.nongrad <- sum(answers["Do not know", "Nongraduates"]
+    ) / sum(answers[, "Nongraduates"])
+print(p_hat.nongrad)
 
 ```
 
 ### (b)
-만일 대졸 이상 학력자 중에서 "모른다"고 응답한 비율을 prop.grad 이라고 하고 고졸 이하 학력자 중에서 동일하게 응답한 비율을 prop.non_grad 라고 한다면 귀무가설은 prop.grad 와 prop.non_grad 가 같다이고 대립 가설은 prop.grad 와 prop.non_grad 가 같지 않다가 된다.
+만일 대졸 이상 학력자 중에서 "모른다"고 응답한 비율을 prop.grad 이라고 하고 고졸 이하 학력자 중에서 동일하게 응답한 비율을 prop.nongrad 라고 한다면 귀무가설은 prop.grad 와 prop.nongrad 가 같다이고 대립 가설은 prop.grad 와 prop.non_grad 가 같지 않다가 된다.
 random sampling 이고 샘플의 숫자가 각각 모수의 10% 이하 임으로 독립을 만족시킨다. success-failure condition 확인을 위해 pooled proportion p.hat 은 다음과 같이 만족한다.
 ```{r}
-p_hat <- sum(answers["Do not know",]) / sum(answers)
+p_hat <- sum(answers["Do not know",]) / total.survey
 print(p_hat)
-z <-  (p_hat.grad - p_hat.non_grad) / sqrt((p_hat * (1-p_hat)) / sum(answers[, "Graduates"]) + (p_hat * (1-p_hat)) / sum(answers[, "Non graduates"]))
+z <-  (p_hat.grad - p_hat.nongrad) / sqrt((p_hat * (1-p_hat)
+  ) / sum(answers[, "Graduates"]) + (p_hat * (1-p_hat)
+  ) / sum(answers[, "Nongraduates"]))
 print(z)
 p_value <- pnorm(-abs(z)) * 2
 print(p_value)
@@ -96,26 +101,92 @@ p-value 가 .01 미만으로 매우 작으므로 귀무가설을 기각한다.  
 ## 6.31 Offshore drilling, Part II
 
 ### (a)
+```{r}
+p_hat.grad <- sum(answers["Support", "Graduates"]) / sum(
+  answers[, "Graduates"])
+print(p_hat.grad)
+p_hat.nongrad <- sum(answers["Support", "Nongraduates"]
+    ) / sum(answers[, "Nongraduates"])
+print(p_hat.nongrad)
+```
 
 ### (b)
+만일 대졸 이상 학력자 중에서 "지지한다"고 응답한 비율을 prop.grad 이라고 하고 고졸 이하 학력자 중에서 동일하게 응답한 비율을 prop.nongrad 라고 한다면 귀무가설은 prop.grad 와 prop.nongrad 가 같다이고 대립 가설은 prop.grad 와 prop.nongrad 가 같지 않다가 된다.
+random sampling 이고 샘플의 숫자가 각각 모수의 10% 이하 임으로 독립을 만족시킨다. success-failure condition 확인을 위해 pooled proportion p.hat 은 다음과 같이 만족한다.
+```{r}
+p_hat <- sum(answers["Support",]) / total.survey
+print(p_hat)
+z <-  (p_hat.grad - p_hat.nongrad) / sqrt((p_hat * (1-p_hat)
+      ) / sum(answers[, "Graduates"]) + (p_hat * (1-p_hat)
+      ) / sum(answers[, "Nongraduates"]))
+print(z)
+p_value <- pnorm(-abs(z)) * 2
+print(p_value)
+```
+p-value 가 .7 이상으로 크므로 귀무가설을 기각할 수 없다.  따라서 이 데이터는 대졸 이상 학력자가 지지한다라고 응답한 비율과 고졸 이하의 학력자가 지지한다고 응답한 비율이 서로 같다는 것을 보여주는 증거를 제공한다. 
+
 
 ## 6.44 Barking deer
 
+```{r}
+forages.obs <- c(4, 16, 67, 345)
+total.forages <- sum(forages.obs)
+forages.rep <- c(0.048, 0.147, 0.396, (
+  1 - (0.048 + 0.147 +  0.396)))
+forages.count <- length(forages.obs)
+df.forage <- forages.count - 1
+
+```
+
 ### (a)
+귀무 가설은 사슴 서식지에서 관찰한 것과 보고된 것이 같은 분포를 따른다는 것이고 반대로 대립 가설은 관찰한 것과 보고된 것이 다른 분포를 따른다는 것이다.   
 
 ### (b)
+chi sqaure goodness of fit test를 사용한다.
 
 ### (c)
+independence: 관찰한 사슴 서식지를 ramdom sampling 했다고 볼 수 있다. sample size: 관찰된 woods 의 개수가 5 미만인  4 라서 조건을 만족시키기 애매할 수 있다.
 
 ### (d)
+p-value가 매우 작기 때문에 귀무가설을 기각한다. 즉, 이 데이터는 보고된 사슴 서식지의 분포와 관찰한 서식지의 분포가 다름을 강하게 보여주는 증거가 된다.  
+
+```{r}
+chi.square <- 0
+for (i in 1:forages.count) {
+  expect <- total.forages * forages.rep[i]
+  result <- (forages.obs[i] - expect)^2 / expect
+  chi.square <- chi.square + result
+}
+print(chi.square)
+p.value <- pchisq(q = chi.square, df = df.forage, lower.tail = FALSE)
+print(p.value)
+```
 
 ## 6.47 Offshore drilling, Part III
-
+귀무가설은 대졸 이상 학력자와 고졸 이하의 학력자 간의 의견이 캘리포니아 만의 자원 채취에 관해 다르지 않다이고 대립 가설은 반대로 다르다는 것이다.
+sample이 각각 모두 ramdom이면서 상관 관계가 없으며 모수의 10% 이만이기 때문에 indepence를 만족시키고 sample size는 각각 모두 5 이상이라 조건을 만족시킨다고 볼 수 있다.
+```{r}
+chisq.test(answers)
+```
+다음와 같이 테스트 한 결과 p value가 0.005 보다 작으므로 이 데이터는 자원 채취에 관한 의견이 학력 수준과 연관되어 있음을 보여주는 강한 증거가 된다. 
 
 
 ## 6.49 Shipping holiday gifts
+```{r}
+gifts <- matrix(c(72, 97, 76, 52, 76, 34, 31, 24, 
+    9, 7, 6, 3, 3, 6, 4), ncol=3, byrow = TRUE)
+colnames(gifts) <- c("A18-34", "A35-54", "A55+")
+rownames(gifts) <- c("USPS", "UPS", "FedEx", "Something else", "Not sure")
+gifts <- as.table(gifts)
+print(gifts)
+```
 
 ### (a)
+귀무가설은 LA 거주자들의 연령대와 선호하는 선물 배송업체의 차이와 상관 관게가 없다는 것이고 대립 가설은 LA 거주자들의 연령대와 선호하는 선물 배송업체의 차이가 상관 관계가 있다는 것이다..
 
 ### (b)
-
+sample이 각각 모두 ramdom이면서 상관 관계가 없으며 모수의 10% 이만이기 때문에 indepence를 만족시키나 sample size 측면에서 5 미만의 예상 숫자가 있기 때문에 조건을 만족시킬 수 없다.
+```{r}
+chisq.test(gifts)
+```
+다음과 같이 Chi-square test를 수행하면 예측이 틀릴 수 있다는 경고가 표시된다.
