@@ -1,0 +1,386 @@
+---
+title: 'Stats Homework #10'
+author: "2015-26042 Hyunghun Cho"
+date: "2016년 12월 2일"
+output:
+  pdf_document:
+    includes:
+      in_header: header.tex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Wine dataset multivariate analysis
+
+```{r wine_data, echo=TRUE}
+library(MASS)
+library(broom)
+white_wines <- read.csv("winequality-white.csv")
+red_wines <- read.csv("winequality-red.csv")
+print (summary(white_wines))
+print (summary(red_wines))
+
+#plot(white_wines)
+#plot(red_wines)
+
+# following shows available columns in wine data
+print (colnames(white_wines))
+
+# merge two tables into all wine dataset
+all_wines <- merge(white_wines, red_wines, by=colnames(white_wines), all=TRUE)
+
+print (summary(all_wines))
+#plot(wines)
+
+
+columns <- colnames(all_wines)
+print (columns)
+print (sapply(all_wines, class))
+
+```
+## white wine + red wine
+white wine과 red wine를 합쳐 분석한 결과, full 모델에서 가장 좋은 adjust R sqaure 값과 p-value를 갖는다.
+
+**full model:** 
+*quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + density + pH + sulphates + alcohol*
+
+```{r all_wine, echo=FALSE}
+wines <- all_wines
+
+# exploratory data analysis
+
+for(column in columns) {
+  selected.col_values <- wines[,column]
+  selected.class <- sapply(wines[column], class)
+  #print(selected.class)
+  print (summary(selected.col_values))
+  if (selected.class != "factor") {
+    hist(selected.col_values)
+    if (column != "quality") {
+      print (column)
+      print (cor(selected.col_values, wines$quality))
+      print (cor.test(selected.col_values, wines$quality))    
+    }    
+  }
+}
+
+full_lm <- lm(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol)
+
+print (summary(full_lm))
+
+print_stats <- function (model, step) {
+  print (paste0("step: ", as.character(step), ", R squared: " , as.character(summary(lm(model))$adj.r.squared), ", p-value:",  as.character(glance(lm(model))$p.value)))  
+}
+
+
+# backward elemination
+print_stats(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol, 'full')
+
+print_stats(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates, "1.1")
+
+print_stats(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$alcohol, "1.2")
+
+print_stats(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$sulphates+wines$alcohol, '1.3')
+
+print_stats(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$pH+wines$sulphates+wines$alcohol, '1.4')
+
+print_stats(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol, '1.5')
+
+print_stats(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol, '1.6')
+
+print_stats(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol, '1.7')
+
+print_stats(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol, '1.8')
+
+print_stats(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol, '1.9')
+
+print_stats(wines$quality ~ wines$fixed.acidity +wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol, '1.10')
+
+print_stats(wines$quality ~ wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol, '1.11')
+
+print ("all p-value is 0 and adj. all of R square values do not exceed than the one of full model. so, choose full model.")
+
+#using stepAIC function for validation
+elemination.backward <- (stepAIC(full_lm, direction="backward", trace=TRUE)) 
+print (elemination.backward$anova)
+
+
+# forward elemination
+
+print_stats(wines$quality ~ wines$fixed.acidity, '1.1')
+print_stats(wines$quality ~ wines$volatile.acidity, '1.2')
+print_stats(wines$quality ~ wines$citric.acid, '1.3')
+print_stats(wines$quality ~ wines$residual.sugar, '1.4')
+print_stats(wines$quality ~ wines$chlorides, '1.5')
+print_stats(wines$quality ~ wines$free.sulfur.dioxide, '1.6')
+print_stats(wines$quality ~ wines$total.sulfur.dioxide, '1.7')
+print_stats(wines$quality ~ wines$density, '1.8')
+print_stats(wines$quality ~ wines$pH, '1.9')
+print_stats(wines$quality ~ wines$sulphates, '1.10')
+print_stats(wines$quality ~ wines$alcohol, '1.11')
+
+print("alcohol is firstly added because it has the smallest p-value.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$fixed.acidity, '2.1')
+print_stats(wines$quality ~ wines$alcohol+wines$volatile.acidity, '2.2')
+print_stats(wines$quality ~ wines$alcohol+wines$citric.acid, '2.3')
+print_stats(wines$quality ~ wines$alcohol+wines$residual.sugar, '2.4')
+print_stats(wines$quality ~ wines$alcohol+wines$chlorides, '2.5')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide, '2.6')
+print_stats(wines$quality ~ wines$alcohol+wines$total.sulfur.dioxide, '2.7')
+print_stats(wines$quality ~ wines$alcohol+wines$density, '2.8')
+print_stats(wines$quality ~ wines$alcohol+wines$pH, '2.9')
+print_stats(wines$quality ~ wines$alcohol+wines$sulphates, '2.10')
+
+print("free.sulfur.dioxide is secondly added because it has the smallest p-value.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$fixed.acidity, '3.1')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity, '3.2')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$citric.acid, '3.3')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$residual.sugar, '3.4')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$chlorides, '3.5')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide, '3.6')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$density, '3.7')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$pH, '3.8')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$sulphates, '3.9')
+
+print("volatile.acidity is secondly added because it has the largest adj. R square with p-value 0.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$fixed.acidity, '4.1')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$citric.acid, '4.2')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$residual.sugar, '4.3')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$chlorides, '4.4')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$total.sulfur.dioxide, '4.5')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$density, '4.6')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$pH, '4.7')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates, '4.8')
+
+print("volatile.acidity is added because it has the largest adj. R square with p-value 0.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$fixed.acidity, '4.1')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$citric.acid, '4.2')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$residual.sugar, '4.3')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$chlorides, '4.4')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$total.sulfur.dioxide, '4.5')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$density, '4.6')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$pH, '4.7')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates, '4.8')
+
+print("sulphates is added because it has the largest adj. R square with p-value 0.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$fixed.acidity, '5.1')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$citric.acid, '5.2')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar, '5.3')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$chlorides, '5.4')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$total.sulfur.dioxide, '5.5')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$density, '5.6')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$pH, '5.7')
+print("residual.sugar is added because it has the largest adj. R square with p-value 0.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$fixed.acidity, '6.1')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$citric.acid, '6.2')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$chlorides, '6.3')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide, '6.4')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$density, '6.5')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$pH, '6.6')
+print("total.sulfur.dioxide is added because it has the largest adj. R square with p-value 0.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$fixed.acidity, '7.1')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$citric.acid, '7.2')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides, '7.3')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$density, '7.4')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$pH, '7.5')
+print("chlorides is added because it has the largest adj. R square with p-value 0.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides+wines$fixed.acidity, '8.1')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides+wines$citric.acid, '8.2')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides+wines$density, '8.3')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides+wines$pH, '8.4')
+print("pH is added because it has the largest adj. R square with p-value 0.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides+wines$pH+wines$fixed.acidity, '8.1')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides+wines$pH+wines$citric.acid, '8.2')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides+wines$pH+wines$density, '8.3')
+print("density is added because it has the largest adj. R square with p-value 0.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides+wines$pH+wines$density+wines$fixed.acidity, '9.1')
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides+wines$pH+wines$density+wines$citric.acid, '9.2')
+print("fixed.acidity is added because it has the largest adj. R square with p-value 0.")
+
+print_stats(wines$quality ~ wines$alcohol+wines$free.sulfur.dioxide+wines$volatile.acidity+wines$sulphates+wines$residual.sugar+wines$total.sulfur.dioxide+wines$chlorides+wines$pH+wines$density+wines$fixed.acidity+wines$citric.acid, '10.1')
+print("citric.acid is added because it has the largest adj. R square with p-value 0.")
+
+#using stepAIC function for validation
+elemination.forward <- (stepAIC(full_lm, direction="forward", trace=TRUE))
+print (elemination.forward$anova)
+
+
+```
+## White wine only
+
+화이트 와인만 분석한 경우는 다음과 같다.
+
+backward selection 은 다음 모델을 최적화 모델로 선택한다. 
+*quality ~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol*
+
+반면 forward selection은 다음 모델을 최적화 모델로 선택한다.
+*quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides +free.sulfur.dioxide + total.sulfur.dioxide +density + pH + sulphates + alcohol*
+
+```{r white_wine, echo=FALSE}
+wines <- white_wines
+
+# exploratory data analysis
+
+for(column in columns) {
+  selected.col_values <- wines[,column]
+  selected.class <- sapply(wines[column], class)
+  #print(selected.class)
+  print (summary(selected.col_values))
+  if (selected.class != "factor") {
+    hist(selected.col_values)
+    if (column != "quality") {
+      print (column)
+      print (cor(selected.col_values, wines$quality))
+      print (cor.test(selected.col_values, wines$quality))    
+    }    
+  }
+}
+
+full_lm <- lm(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol)
+
+print (summary(full_lm))
+
+print_stats <- function (model, step) {
+  print (paste0("step: ", as.character(step), ", R squared: " , as.character(summary(lm(model))$adj.r.squared), ", p-value:",  as.character(glance(lm(model))$p.value)))  
+}
+
+
+# backward elemination
+#using stepAIC function for validation
+elemination.backward <- (stepAIC(full_lm, direction="backward", trace=TRUE)) 
+print (elemination.backward$anova)
+
+
+# forward elemination
+elemination.forward <- (stepAIC(full_lm, direction="forward", trace=TRUE))
+print (elemination.forward$anova)
+
+
+```
+
+## Red wine only
+
+레드 와인만 분석한 경우는 다음과 같다. 
+
+backward selection 은 다음 모델을 최적화 모델로 선택한다. 
+*quality ~ volatile.acidity + chlorides + free.sulfur.dioxide +  total.sulfur.dioxide + pH + sulphates + alcohol*
+
+반면 forward selection은 다음 모델을 최적화 모델로 선택한다.
+*quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides +free.sulfur.dioxide + total.sulfur.dioxide +density + pH + sulphates + alcohol*
+
+```{r red_wine, echo=FALSE}
+wines <- red_wines
+
+# exploratory data analysis
+for(column in columns) {
+  selected.col_values <- wines[,column]
+  selected.class <- sapply(wines[column], class)
+  #print(selected.class)
+  print (summary(selected.col_values))
+  if (selected.class != "factor") {
+    hist(selected.col_values)
+    if (column != "quality") {
+      print (column)
+      print (cor(selected.col_values, wines$quality))
+      print (cor.test(selected.col_values, wines$quality))    
+    }    
+  }
+}
+
+full_lm <- lm(wines$quality ~ wines$fixed.acidity +wines$volatile.acidity+wines$citric.acid+wines$residual.sugar+wines$chlorides+wines$free.sulfur.dioxide+wines$total.sulfur.dioxide+wines$density+wines$pH+wines$sulphates+wines$alcohol)
+
+print (summary(full_lm))
+
+print_stats <- function (model, step) {
+  print (paste0("step: ", as.character(step), ", R squared: " , as.character(summary(lm(model))$adj.r.squared), ", p-value:",  as.character(glance(lm(model))$p.value)))  
+}
+
+
+# backward elemination
+#using stepAIC function for validation
+elemination.backward <- (stepAIC(full_lm, direction="backward", trace=TRUE)) 
+print (elemination.backward$anova)
+
+
+# forward elemination
+elemination.forward <- (stepAIC(full_lm, direction="forward", trace=TRUE))
+print (elemination.forward$anova)
+```
+
+# Exercises
+
+## 8.1 Baby weights, Part I.
+
+### (a) 
+weights.est = 123.05 - 8.94 * smoke 
+
+### (b)
+임산부의 흡연 여부가 태아의 출생 몸무게에 영향을 미치는데 흡연하는 산부에게 태어날 태아의 몸무게가 비흡연자의 태아보다 8.94 온스 적게 예측할 수 있다. 즉, 비흡연자의 태아가 123.05 라고 예측한다면 흡연자의 태아는 114.11 온스라고 예측할 수 있다. 
+
+### (c)
+귀무가설은 기울기 beta가 0이고 대립가설은 beta가 0이 아니다. 이때 p-value 가 0.05보다 작기 때문에 귀무가설을 기각한다. 따라서 이 데이터는 실제 기울기가 0이 아니라는 강한 증거가 될 수 있으며 임산부의 흡연 여부가 태아의 출생 몸무게에 영향을 미친다.
+
+## 8.2 Baby weights, Part II.
+
+### (a)
+weights.est = 120.07 - 1.93 x parity
+
+### (b)
+태아가 임산부의 첫번째 자녀인지 여부를 알려주는 parity가 0일 경우 초산을 의미하며 1일 경우 초산이 아니라는 것을 의미한다. 따라서 초산일 경우에는 태아의 몸무게가 120.07 온스라고 예측한다면 초산이 아닐 경우에는 118.14 온스로 더 적게 예측할 수 있다. 
+
+### (c)
+귀무가설은 기울기 beta가 0이고 대립가설은 beta가 0이 아니다. 이때 p-value 가 0.05보다 크기 때문에 귀무가설을 기각할 수 없다. 따라서 이 데이터는 기울기가 0이 아니라고 할 수 없으며 임산부의 초산 여부가 태아의 출생 몸무게에 영향을 미친다고 할 수 없다.  
+
+## 8.3 Baby weights, Part III.
+
+### (a)
+weights.est = -80.41 + 0.44 x gestation -0.33 x parity -0.01 x age + 1.15 x height + 0.05 x weight -8.40 x smoke
+
+### (b)
+임신 기간(날 수)과 출산 시의 임산부의 나이가 태아의 출산 시 몸무게에 영향을 미치는 데 임신 기간이 하루 증가하거나 감소할 때 태아의 몸무게가 0.44 증가 혹은 감소한다고 예측할 수 있으며 임산부의 나이가 한살 증가하거나 감소할 때 태아의 몸무게가 0.01 감소 혹은 증가한다고 예측할 수 있다.     
+
+### (c)
+parity가 이 모델의 다른 변수들과 상호 연관(correlated)되어서로 유추할 수 있다. 
+
+### (d)
+```{r}
+bwt <- 120
+gestation <- 284
+parity <- 0
+age <- 27
+height <- 62
+weight <- 100
+smoke <- 0
+weight.estimate <- (-80.41 + 0.44 * gestation -0.33 * parity -0.01 * age + 1.15 * height + 0.05 * weight -8.40 * smoke)
+residual <- bwt - weight.estimate
+print (residual)
+```
+
+### (e)
+```{r}
+SS.err <- 249.28
+SS.total <- 332.57
+R.square <- 1 - (SS.err / SS.total)
+print (R.square)
+
+n <- 1236 # the number of cases
+p <- 6 # the number of predictors
+R.square.adj <- 1 - (SS.err / SS.total) * (n - 1) / (n - p - 1)
+print (R.square.adj)
+```
+
+## 8.9 Baby weights, Part V.
+p-value 를 기준으로 했을 때 gestation 이나 smoke 이 첫번째 선택되어야 한다. 하지만 gestation 의 adj. R square가 smoke보다 크기 때문에 gestation이 먼저 선택된다.
+
